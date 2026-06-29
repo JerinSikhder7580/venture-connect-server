@@ -204,12 +204,7 @@ async function run() {
 
         })
 
-        // app.get("/opportunity/industry", async (req, res) => {
-        //     const { industry } = req.query
-
-        //     const result = await opportunityCollection.find(query).toArray()
-        //     // console.log(result);
-
+       
         // })
         app.get("/opportunity/:id", async (req, res) => {
             const { id } = req.params
