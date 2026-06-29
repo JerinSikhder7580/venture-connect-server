@@ -1,0 +1,6 @@
+.env
+node_modules
+fixOpportunity.js
+normalizeUserRoles.js
+updateOpportunityStartupNames.js
+updateStartupFounderName.js
