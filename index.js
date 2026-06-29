@@ -35,13 +35,14 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        await client.connect()
+        // await client.connect()
 
         const database = client.db("ventureconnect_db")
         const startupsCollections = database.collection("startups")
         const userCollection = database.collection("user")
         const opportunityCollection = database.collection("opportunity")
         const applicationsCollection = database.collection("applications")
+        const paymentsCollections = database.collection("payments")
 
         app.get("/startups", async (req, res) => {
             // console.log("calling")
@@ -104,11 +105,24 @@ async function run() {
         })
         // user related codes
 
+
+        app.get("/users", async (req, res) => {
+            const result = await userCollection.find().toArray()
+            res.send(result)
+        })
         app.get("/user", async (req, res) => {
             const email = req.query
             const result = await userCollection.findOne(email)
             res.send(result)
 
+        })
+
+
+        app.patch("/user", async (req, res) => {
+            const { id, status } = req.query
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.updateOne(query, { $set: { isBlocked: Boolean(status) } })
+            res.send(result)
         })
 
         app.patch("/user", async (req, res) => {
@@ -226,6 +240,7 @@ async function run() {
 
         })
 
+
         app.delete("/opportunity/:id", async (req, res) => {
             const { id } = req.params
             const query = { _id: new ObjectId(id) }
@@ -233,6 +248,45 @@ async function run() {
             res.send(result)
             // console.log(id)
         })
+
+
+        // admin dashboard
+
+        app.get("/founder/dashboard", async (req, res) => {
+            const { email, startupName } = req.query
+            console.log(startupName)
+            console.log(email)
+            const opportunityCount = await opportunityCollection.countDocuments({ userEmail: email })
+            const applicationCount = await applicationsCollection.countDocuments({ startupName: startupName })
+            const query = { status: "accepted", startupName: startupName }
+            const acceptedApplication = await applicationsCollection.countDocuments(query)
+            const result = { opportunityCount, applicationCount, acceptedApplication }
+            console.log(result)
+            res.send(result)
+        })
+
+        app.get("/admin/dashboard", async (req, res) => {
+            // total users count
+            // total startups count
+            // total opportunity count
+            // total revenue 
+            const totalUsersCount = await userCollection.countDocuments()
+            const totalStartupsCount = await startupsCollections.countDocuments()
+            const totalOpportunityCount = await opportunityCollection.countDocuments()
+
+            const allAmounts = await paymentsCollections.find({}, { projection: { _id: 0, amount: 1 } }).toArray()
+            console.log(allAmounts)
+            let revenue = 0
+            allAmounts.forEach((items) => {
+                revenue = revenue + items.amount
+            })
+            res.send({ totalUsersCount, totalStartupsCount, totalOpportunityCount, revenue })
+
+            // const totalUsersCount = await userCollection.countDocuments()
+
+
+        })
+
 
         // applications api
 
@@ -254,11 +308,11 @@ async function run() {
             const { id, status } = req.query //
             const query = { _id: new ObjectId(id) } //
             const update = { // 
-                $set: {status}
+                $set: { status }
             }
             const result = await applicationsCollection.updateOne(query, update) // 
             // console.log(query,update)
-            console.log(query,update) //
+            console.log(query, update) //
 
             res.send(result) //
 
@@ -271,6 +325,22 @@ async function run() {
             const result = await applicationsCollection.insertOne(data)
             res.send(result)
         })
+        // payments
+        app.get("/payments", async (req, res) => {
+            const result = await paymentsCollections.find().toArray()
+            res.send(result)
+        })
+        app.post("/payments", async (req, res) => {
+            const data = req.body
+            data.status = "complete"
+            data.createdAt = new Date()
+            const result = await paymentsCollections.insertOne(data)
+            const query = { email: data.email }
+            const update = { $set: { plan: "Premium" } }
+            await userCollection.updateOne(query, update)
+            res.send(result)
+        })
+
 
 
 
