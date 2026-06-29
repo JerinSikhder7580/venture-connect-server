@@ -266,10 +266,7 @@ async function run() {
         })
 
         app.get("/admin/dashboard", async (req, res) => {
-            // total users count
-            // total startups count
-            // total opportunity count
-            // total revenue 
+           
             const totalUsersCount = await userCollection.countDocuments()
             const totalStartupsCount = await startupsCollections.countDocuments()
             const totalOpportunityCount = await opportunityCollection.countDocuments()
@@ -282,7 +279,6 @@ async function run() {
             })
             res.send({ totalUsersCount, totalStartupsCount, totalOpportunityCount, revenue })
 
-            // const totalUsersCount = await userCollection.countDocuments()
 
 
         })
@@ -300,7 +296,6 @@ async function run() {
                 query = { startupName }
             }
             const result = await applicationsCollection.find(query).toArray()
-            // console.log(result)
             res.send(result)
         })
 
@@ -311,7 +306,6 @@ async function run() {
                 $set: { status }
             }
             const result = await applicationsCollection.updateOne(query, update) // 
-            // console.log(query,update)
             console.log(query, update) //
 
             res.send(result) //
