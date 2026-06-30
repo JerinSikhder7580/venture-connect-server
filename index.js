@@ -23,49 +23,49 @@ const client = new MongoClient(uri, {
     }
 });
 
-const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
-const verifyToken = async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer")) {
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-    const token = authHeader.split(" ")[1]
-    console.log(token)
-    if (!token) {
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-    try {
-        const { payload } = await jwtVerify(token, JWKS)
-        console.log("data", payload)
-        next()
-    } catch (error) {
-        console.log(error);
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-}
 // const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
-const verifyRole = async (req, res, next) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer")) {
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-    const token = authHeader.split(" ")[1]
-    console.log(token)
-    if (!token) {
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-    try {
-        const { payload } = await jwtVerify(token, JWKS)
-        console.log(payload)
-        if (payload.role === "founder") {
-            return next()
-        }
-        res.status(401).json({ message: "Unauthorized" })
-    } catch (error) {
-        console.log(error);
-        return res.status(401).json({ msg: "Unauthorized" })
-    }
-}
+// const verifyToken = async (req, res, next) => {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith("Bearer")) {
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+//     const token = authHeader.split(" ")[1]
+//     console.log(token)
+//     if (!token) {
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+//     try {
+//         const { payload } = await jwtVerify(token, JWKS)
+//         console.log("data", payload)
+//         next()
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+// }
+// // const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+// const verifyRole = async (req, res, next) => {
+//     const authHeader = req.headers.authorization;
+//     if (!authHeader || !authHeader.startsWith("Bearer")) {
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+//     const token = authHeader.split(" ")[1]
+//     console.log(token)
+//     if (!token) {
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+//     try {
+//         const { payload } = await jwtVerify(token, JWKS)
+//         console.log(payload)
+//         if (payload.role === "founder") {
+//             return next()
+//         }
+//         res.status(401).json({ message: "Unauthorized" })
+//     } catch (error) {
+//         console.log(error);
+//         return res.status(401).json({ msg: "Unauthorized" })
+//     }
+// }
 
 
 
@@ -131,7 +131,7 @@ async function run() {
             res.send(result)
         })
 
-        app.post("/startups", verifyRole, async (req, res) => {
+        app.post("/startups", async (req, res) => {
             const data = req.body
             const result = await startupsCollections.insertOne(data)
             res.send(result)
