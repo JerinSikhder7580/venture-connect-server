@@ -23,27 +23,27 @@ const client = new MongoClient(uri, {
     }
 });
 
-// const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
-// const verifyToken = async (req, res, next) => {
-//     const authHeader = req.headers.authorization;
-//     if (!authHeader || !authHeader.startsWith("Bearer")) {
-//         return res.status(401).json({ msg: "Unauthorized" })
-//     }
-//     const token = authHeader.split(" ")[1]
-//     console.log(token)
-//     if (!token) {
-//         return res.status(401).json({ msg: "Unauthorized" })
-//     }
-//     try {
-//         const { payload } = await jwtVerify(token, JWKS)
-//         console.log("data", payload)
-//         next()
-//     } catch (error) {
-//         console.log(error);
-//         return res.status(401).json({ msg: "Unauthorized" })
-//     }
-// }
-// // const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    const token = authHeader.split(" ")[1]
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    try {
+        const { payload } = await jwtVerify(token, JWKS)
+        req.user = payload
+        console.log("data", payload)
+        next()
+    } catch (error) {
+        console.log(error);
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+}
 // const verifyRole = async (req, res, next) => {
 //     const authHeader = req.headers.authorization;
 //     if (!authHeader || !authHeader.startsWith("Bearer")) {
@@ -131,7 +131,7 @@ async function run() {
             res.send(result)
         })
 
-        app.post("/startups", async (req, res) => {
+        app.post("/startups", verifyToken, async (req, res) => {
             const data = req.body
             const result = await startupsCollections.insertOne(data)
             res.send(result)
