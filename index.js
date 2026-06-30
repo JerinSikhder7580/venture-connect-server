@@ -182,11 +182,13 @@ async function run() {
 
 
 
+
+
             const result = await opportunityCollection.find(query).skip(Number(skip) || 0).limit(Number(limit) || 0).toArray()
             if (limit) {
                 const dataCount = await opportunityCollection.countDocuments()
                 res.send({ result, dataCount })
-                // console.log(dataCount)
+
             }
             else {
                 res.send(result)
@@ -205,6 +207,8 @@ async function run() {
             res.send(result)
 
         })
+
+        
         app.patch("/opportunity", async (req, res) => {
             const { id } = req.query
             const data = req.body
