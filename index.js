@@ -98,12 +98,10 @@ async function run() {
 
         app.delete("/startups", async (req, res) => {
             const email = req.query
-            // console.log(email)
 
             const result = await startupsCollections.deleteOne(email)
             res.send(result)
         })
-        // user related codes
 
 
         app.get("/users", async (req, res) => {
@@ -245,7 +243,7 @@ async function run() {
         })
 
 
-        // admin dashboard
+        // admin dashboard apis here
 
         app.get("/founder/dashboard", async (req, res) => {
             const { email, startupName } = req.query
