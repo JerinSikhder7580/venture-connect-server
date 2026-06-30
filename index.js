@@ -345,7 +345,7 @@ async function run() {
 
             const sort = { id: -1 }
             const result = await startupsCollections.find().sort(sort).limit(6).toArray()
-            
+
             res.send(result)
         })
 
@@ -361,10 +361,12 @@ async function run() {
             const userEmail = req.query
             const projection = {
                 projection: {
+
                     name: 1
                 }
             }
             const result = await startupsCollections.findOne(userEmail, projection)
+            
             res.send(result)
         })
 
