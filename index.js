@@ -268,7 +268,7 @@ async function run() {
         })
 
 
-        // applications api
+        // applications apis here 
 
         app.get("/applications", async (req, res) => {
             const { userEmail, startupName } = req.query
