@@ -12,7 +12,7 @@ app.use(express.json())
 
 
 
-const uri = "mongodb+srv://ventureconnect:FznRevypdNiryQEm@cluster0.gqu9vmb.mongodb.net/?appName=Cluster0";
+const uri = process.env.MONGO_DB_URI;
 
 const client = new MongoClient(uri, {
     serverApi: {

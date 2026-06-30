@@ -1,4 +1,5 @@
 .env
+.vercel
 node_modules
 fixOpportunity.js
 normalizeUserRoles.js
