@@ -36,7 +36,8 @@ async function run() {
         const paymentsCollections = database.collection("payments")
 
         app.get("/startups", async (req, res) => {
-            // console.log("calling")
+
+            
             const { userEmail, status, search, filter } = req.query // {userEmail: 'ventureconnectfounder@gmail.com'}
             let query = {} // {userEmail: 'ventureconnectfounder@gmail.com'}
             if (userEmail) {
