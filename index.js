@@ -275,7 +275,7 @@ async function run() {
         })
 
 
-        
+
 
         // applications apis here 
 
@@ -305,6 +305,9 @@ async function run() {
 
         })
 
+
+
+
         app.post("/applications", async (req, res) => {
             const data = req.body
             const today = new Date() // date string
@@ -312,11 +315,16 @@ async function run() {
             const result = await applicationsCollection.insertOne(data)
             res.send(result)
         })
+
+
+
         // payments apis
         app.get("/payments", async (req, res) => {
             const result = await paymentsCollections.find().toArray()
             res.send(result)
         })
+
+        
         app.post("/payments", async (req, res) => {
             const data = req.body
             data.status = "complete"
