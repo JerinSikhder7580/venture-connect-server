@@ -22,15 +22,6 @@ const client = new MongoClient(uri, {
     }
 });
 
-// get
-// patch
-// put
-// post
-// delete
-// api er nam "startups" hole frontend a base api  er pore  "startups" likhte hoy
-// api er nam "/user/opportunity" hole frontend a base api er por a "/user/opportunity " likhte hoy
-
-
 
 
 async function run() {
