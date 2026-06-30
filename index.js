@@ -292,7 +292,7 @@ async function run() {
 
         // admin dashboard apis here
 
-        app.get("/founder/dashboard", verifyToken, async (req, res) => {
+        app.get("/founder/dashboard", async (req, res) => {
             const { email, startupName } = req.query
             // console.log(req.headers.authorization)
             console.log(startupName)
