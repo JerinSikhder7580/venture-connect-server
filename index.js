@@ -131,7 +131,7 @@ async function run() {
             res.send(result)
         })
 
-        app.post("/startups", verifyToken, async (req, res) => {
+        app.post("/startups", async (req, res) => {
             const data = req.body
             const result = await startupsCollections.insertOne(data)
             res.send(result)
