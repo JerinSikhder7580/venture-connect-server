@@ -312,7 +312,7 @@ async function run() {
             const result = await applicationsCollection.insertOne(data)
             res.send(result)
         })
-        // payments
+        // payments apis
         app.get("/payments", async (req, res) => {
             const result = await paymentsCollections.find().toArray()
             res.send(result)
