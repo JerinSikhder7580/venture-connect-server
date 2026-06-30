@@ -208,7 +208,7 @@ async function run() {
 
         })
 
-        
+
         app.patch("/opportunity", async (req, res) => {
             const { id } = req.query
             const data = req.body
@@ -229,6 +229,7 @@ async function run() {
                 res.send({ insert, result })
             }
 
+            
         })
 
 
