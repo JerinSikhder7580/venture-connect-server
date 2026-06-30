@@ -2,6 +2,7 @@ const express = require('express');
 const dotenv = require("dotenv")
 const cors = require("cors")
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { createRemoteJWKSet, jwtVerify } = require('jose-cjs');
 
 dotenv.config()
 const app = express();
@@ -22,6 +23,50 @@ const client = new MongoClient(uri, {
     }
 });
 
+const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+const verifyToken = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    const token = authHeader.split(" ")[1]
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    try {
+        const { payload } = await jwtVerify(token, JWKS)
+        console.log("data", payload)
+        next()
+    } catch (error) {
+        console.log(error);
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+}
+// const JWKS = createRemoteJWKSet(new URL(`${process.env.CLIENT_URL}/api/auth/jwks`))
+const verifyRole = async (req, res, next) => {
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer")) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    const token = authHeader.split(" ")[1]
+    console.log(token)
+    if (!token) {
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+    try {
+        const { payload } = await jwtVerify(token, JWKS)
+        console.log(payload)
+        if (payload.role === "founder") {
+            return next()
+        }
+        res.status(401).json({ message: "Unauthorized" })
+    } catch (error) {
+        console.log(error);
+        return res.status(401).json({ msg: "Unauthorized" })
+    }
+}
+
 
 
 async function run() {
@@ -34,6 +79,10 @@ async function run() {
         const opportunityCollection = database.collection("opportunity")
         const applicationsCollection = database.collection("applications")
         const paymentsCollections = database.collection("payments")
+
+        // const verifyUser =async (req, res) => {
+        //     const token = req.headers.authorization
+        // }
 
         app.get("/startups", async (req, res) => {
 
@@ -82,7 +131,7 @@ async function run() {
             res.send(result)
         })
 
-        app.post("/startups", async (req, res) => {
+        app.post("/startups", verifyRole, async (req, res) => {
             const data = req.body
             const result = await startupsCollections.insertOne(data)
             res.send(result)
@@ -198,7 +247,7 @@ async function run() {
 
         })
 
-       
+
         // })
         app.get("/opportunity/:id", async (req, res) => {
             const { id } = req.params
@@ -243,8 +292,9 @@ async function run() {
 
         // admin dashboard apis here
 
-        app.get("/founder/dashboard", async (req, res) => {
+        app.get("/founder/dashboard", verifyToken, async (req, res) => {
             const { email, startupName } = req.query
+            // console.log(req.headers.authorization)
             console.log(startupName)
             console.log(email)
             const opportunityCount = await opportunityCollection.countDocuments({ userEmail: email })
@@ -257,7 +307,7 @@ async function run() {
         })
 
         app.get("/admin/dashboard", async (req, res) => {
-           
+
             const totalUsersCount = await userCollection.countDocuments()
             const totalStartupsCount = await startupsCollections.countDocuments()
             const totalOpportunityCount = await opportunityCollection.countDocuments()
@@ -324,7 +374,7 @@ async function run() {
             res.send(result)
         })
 
-        
+
         app.post("/payments", async (req, res) => {
             const data = req.body
             data.status = "complete"
