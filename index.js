@@ -175,9 +175,11 @@ async function run() {
                 }
 
                 const userEmail = await startupsCollections.find(userQuery, particularData).toArray()
-                // next code
                 query = { $or: userEmail }
             }
+
+
+
 
 
             const result = await opportunityCollection.find(query).skip(Number(skip) || 0).limit(Number(limit) || 0).toArray()
@@ -366,7 +368,7 @@ async function run() {
                 }
             }
             const result = await startupsCollections.findOne(userEmail, projection)
-            
+
             res.send(result)
         })
 
