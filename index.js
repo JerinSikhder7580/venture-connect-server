@@ -37,7 +37,7 @@ async function run() {
 
         app.get("/startups", async (req, res) => {
 
-            
+
             const { userEmail, status, search, filter } = req.query // {userEmail: 'ventureconnectfounder@gmail.com'}
             let query = {} // {userEmail: 'ventureconnectfounder@gmail.com'}
             if (userEmail) {
@@ -231,7 +231,6 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await opportunityCollection.deleteOne(query)
             res.send(result)
-            // console.log(id)
         })
 
 
