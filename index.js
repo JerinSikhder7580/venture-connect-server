@@ -341,8 +341,11 @@ async function run() {
         // others
 
         app.get("/featured-startups", async (req, res) => {
+
+
             const sort = { id: -1 }
             const result = await startupsCollections.find().sort(sort).limit(6).toArray()
+            
             res.send(result)
         })
 
